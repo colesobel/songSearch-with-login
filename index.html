@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+        <meta charset="utf-8">
+        <title>songSearch</title>
+    </head>
+    <body>
+        <div class="fixed-width">
+            <div class="login-page">
+                <div class="form">
+                    <form class="register-form" action="index.html" method="GET">
+                        <input type="text" placeholder="username" name="username"autofocus=""/>
+                        <input type="password" placeholder="password"/>
+                        <input type="submit" value="Create" class="button" id="createUser"/>
+                        <p class="message">Already registered? <a href="#">Sign In</a></p>
+                    </form>
+                    <form class="login-form" action="index.html" method="GET">
+                        <input type="text" placeholder="username" name="username"autofocus="" id="login-username"/>
+                        <input type="password" placeholder="password" id="login-user-pass"/>
+                        <input type="submit" value="Login" class="button" id="login"/>
+                        <p class="message">Not registered? <a href="#">Create an account</a></p>
+                </form>
+                </div>
+            </div>
+            <main class="main">
+                <nav class="navbar navbar-inverse">
+                    <input type="text" class="nav-item" id="song" placeholder="Enter a song" autofocus="">
+                    <input type="text" class="nav-item" id="artist" placeholder="Enter the artist">
+                    <input type="submit" class="nav-item btn btn-success" id="submit" value="Search">
+                    <input type="submit" id="view-playlist" class="nav-item btn btn-success"  value="View My Playlist">
+                </nav>
+
+                <div class="container">
+
+                    <div class="error">
+
+                    </div>
+                    <div class="no-input">
+
+                    </div>
+                    <div class="player-header">
+
+                    </div>
+                    <div class="player">
+
+                    </div>
+
+                    <p id="guide">
+                        Find new music by entering a track to anchor your search
+                    </p>
+
+
+                    <ul class="results list-group">
+
+                    </ul>
+
+                    <div class="my-playlist">
+                        <p>My Playlist</p>
+                        <!-- <input type="submit" id="mongo-playlist"value="View my saved playlist"> -->
+                        <div class="songs">
+
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
+        <script type="text/javascript" src="logic.js"></script>
+        <script type="text/javascript" src="app.js"></script>
+    </body>
+</html>
