@@ -1,3 +1,4 @@
+/*Login template*/
 @import url(https://fonts.googleapis.com/css?family=Roboto:100);
 * {
     padding: 0;
@@ -10,7 +11,6 @@ body {
     margin: 0;
     font-family: Optima, sans-serif;
 }
-
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
@@ -102,7 +102,9 @@ body {
 .container .info span .fa {
   color: #EF3B3A;
 }
-body {
+
+
+/*body {
   background: #76b852; /* fallback for old browsers */
   background: -webkit-linear-gradient(right, #76b852, #8DC26F);
   background: -moz-linear-gradient(right, #76b852, #8DC26F);
@@ -111,4 +113,106 @@ body {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}*/
+
+
+
+
+/*My css*/
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.login-page .title {
+    text-align: center;
+    font-size: 4em;
+    position: absolute;
+    left: 30px;
+    top: 30px;
+    /*margin-top: -100px;*/
+}
+
+.main {
+    /*border: 2px solid blue;*/
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: #222222;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-item {
+    height: 30px;
+}
+
+/*.button {
+    font-size: 5em;
+}*/
+
+.results-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*border: 2px solid red;*/
+    min-height: 90vh;
+}
+#guide {
+    align-self: center;
+    font-size: 3em;
+}
+
+.player-header {
+    font-size: 1.5em;
+}
+
+.results {
+    display: flex;
+    flex-wrap: wrap;
+    /*border: 2px solid black;*/
+    width: 900px;
+    justify-content: space-around;
+}
+
+.list-group-item {
+    display: flex;
+    width: 400px;
+    height: 75px;
+    position: relative;
+    cursor: pointer;
+}
+
+.list-group-item img {
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    margin-top: -25px;
+}
+
+.list-group-item p {
+    position: absolute;
+    left: 75px;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.list-group-item:hover {
+    background-color: #595959;
+}
+
+#thumbs-up:hover {
+    cursor: pointer;
+}
+
+.thumbs-up-clicked {
+    color: #b01b1b;
+}
+
+audio {
+    cursor: pointer;
 }

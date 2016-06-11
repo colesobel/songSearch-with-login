@@ -7,6 +7,8 @@ $(document).ready(function() {
     var spotifyTrackName = ''
     var spotifyArtistName = ''
     var apiKey = 'd78ab56ad21c652f6fcaed4ae1d11a2a'
+    var currentSelections = {}
+    var userTracks = {}
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -40,9 +42,7 @@ $(document).ready(function() {
                 hasAccount = true
                 $('.login-page').hide()
                 $('.main').show()
-                $('.main').css({
-                    "background-color":"white",
-                    'height': '100vh'})
+                $('.my-playlist').hide()
             }
         })
         if (!hasAccount) {
@@ -66,6 +66,7 @@ $(document).ready(function() {
             alert('account created successfully')
             $('.login-page').hide()
             $('.main').show()
+            $('.my-playlist').hide()
         })
     }
 
@@ -76,7 +77,7 @@ $(document).ready(function() {
     $('#submit').on('click', checkUserInput)
     $('#view-playlist').on('click', getMongoLabData)
     $(document).on('click', '.result-tab', showPlayerHeader)
-    $(document).on('click', '.green-heart', showRedHeart)
+    $(document).on('click', '#thumbs-up', changeThumbColor)
 
 
 
@@ -84,7 +85,7 @@ $(document).ready(function() {
     function checkUserInput(callback) {
         userTrack = $('#song').val().trim()
         userArtist = $('#artist').val().trim()
-        $('.container').children().hide(500)
+        $('.results-container').children().hide(500)
         if (userTrack === '' && userArtist === '') {
             $('.no-input').html('No search criteria specified').slideDown(500)
             return
@@ -98,7 +99,7 @@ $(document).ready(function() {
 
 
     function getSimilarTracks() {
-        $('.container').children().hide(500)
+        $('.results-container').children().hide(500)
         $.ajax({
             url: `http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=${userArtist}&track=${userTrack}&api_key=${apiKey}&format=json`
         }).done(function(data) {
@@ -125,8 +126,9 @@ $(document).ready(function() {
         similarTracks.forEach(function(elem) {
             var trackTitle = elem.name
             var artistName = elem.artist.name
-            var resultTab = document.createElement('div')
+            var resultTab = document.createElement('li')
             $(resultTab).addClass('result-tab')
+            $(resultTab).addClass("list-group-item")
             $(resultTab).attr('data-track', trackTitle)
             $(resultTab).attr('data-artist', artistName)
             var img = document.createElement('img')
@@ -135,9 +137,6 @@ $(document).ready(function() {
             var trackInfo = document.createElement('p')
             trackInfo.innerHTML = `${trackTitle}, ${artistName}`
             $(resultTab).append(trackInfo)
-            // var li = document.createElement('li')
-            // $(li).addClass("list-group-item")
-            // $(li).append(resultTab))
             $('.results').append(resultTab)
         })
     }
@@ -148,45 +147,67 @@ $(document).ready(function() {
     callToSpotify(this)
 }
 
-    function showRedHeart() {
-        $(this).slideUp(500)
-        $('.red-heart').slideDown(500)
+    function callToSpotify(elem) {
+        spotifyTrackName = $(elem).attr('data-track')
+        spotifyArtistName = $(elem).attr('data-artist')
+        $.ajax({
+            url: `https://api.spotify.com/v1/search?q=${spotifyTrackName} ${spotifyArtistName}&type=track&market=US`
+        }).done(function(data) {
+            playSong(data.tracks.items)
+        })
     }
 
-function callToSpotify(elem) {
-    spotifyTrackName = $(elem).attr('data-track')
-    spotifyArtistName = $(elem).attr('data-artist')
-    $.ajax({
-        url: `https://api.spotify.com/v1/search?q=${spotifyTrackName} ${spotifyArtistName}&type=track&market=US`
-    }).done(function(data) {
-        playSong(data.tracks.items)
-    })
-}
-
-function playSong(tracks) {
-    $('.player').empty()
-    $('.player-header').empty()
-    var greenHeart = document.createElement('img')
-    greenHeart.src = "green-heart.png"
-    $(greenHeart).addClass('green-heart')
-    var redHeart = document.createElement('img')
-    redHeart.src = "Red_Heart.gif"
-    $(redHeart).addClass('red-heart')
-    $('.player-header').append(greenHeart)
-    $('.player-header').append(redHeart)
-    $('.player-header').append(`<p> ${spotifyTrackName}, ${spotifyArtistName}</p>`)
-    var found = false
-    for (var i = 0; i < tracks.length; i++) {
-        if (containsAll(tracks[i].name, spotifyTrackName.toLowerCase()) && containsAll(tracks[i].artists[0].name, spotifyArtistName.toLowerCase())) {
-            $('.player').append(`<iframe src="${tracks[i].preview_url}" frameborder="0" allowfullscreen></iframe>`)
-                found = true
-                return
+    function playSong(tracks) {
+        $('.player').empty()
+        $('.player-header').empty()
+        $('.player-header').append(`<p data-track="${spotifyTrackName}" data-artist="${spotifyArtistName}"> ${spotifyTrackName}, ${spotifyArtistName} &nbsp <i id="thumbs-up" class="fa fa-thumbs-o-up" aria-hidden="true"></i></p>`)
+        var found = false
+        for (var i = 0; i < tracks.length; i++) {
+            if (containsAll(tracks[i].name, spotifyTrackName.toLowerCase()) && containsAll(tracks[i].artists[0].name, spotifyArtistName.toLowerCase())) {
+                var audio = new Audio
+                audio.src = tracks[i].preview_url
+                audio.controls = 'controls'
+                audio.autoplay = 'autoplay'
+                $('.player').append(audio)
+                    found = true
+                    return
+            }
+        }
+        if (found === false) {
+            $('.player').append('<p>Sorry, no song preview available for this track</p>')
         }
     }
-    if (found === false) {
-        $('.player').append('<p>Sorry, no song preview available for this track</p>')
+
+    function changeThumbColor() {
+        $(this).addClass('thumbs-up-clicked', 'slow')
+        currentSelections[$(this).parent().attr('data-track')] = $(this).parent().attr('data-artist')
+        accessMongoLab(findUserPlayList)
     }
-}
+
+
+    function findUserPlayList(data) {
+        var mongoId = ''
+        data.forEach(function(account) {
+            if (account.userName === userName) {
+                mongoId = account._id.$oid;
+                userTracks = account.tracks;
+                for (song in userTracks) {
+                    currentSelections[song] = userTracks[song]
+                }
+            }
+        })
+        updateDatabasePlaylist(mongoId)
+    }
+
+
+    function updateDatabasePlaylist(mongoId) {
+        $.ajax({
+            type: 'PUT',
+            url: `https://api.mlab.com/api/1/databases/songsearch/collections/playlist/${mongoId}?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb`,
+            contentType: "application/json",
+            data: JSON.stringify( { "$set" : { 'tracks' : currentSelections } } )
+        })
+    }
 
     function getMongoLabData() {
         $.ajax({
@@ -201,6 +222,7 @@ function playSong(tracks) {
         $('.results').hide(500)
         $('.player-header').hide(500)
         $('.player').hide(500)
+        $('.songs').empty()
         $('.my-playlist').show(500)
         $('.songs').show(500)
         data.forEach(function(account) {

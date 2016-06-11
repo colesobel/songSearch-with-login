@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/darkly/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
+        <script src="https://use.fontawesome.com/47c4710be2.js"></script>
         <link rel="stylesheet" href="style.css">
         <meta charset="utf-8">
         <title>songSearch</title>
@@ -10,6 +13,9 @@
     <body>
         <div class="fixed-width">
             <div class="login-page">
+                <p class="title">
+                    songSearch <i class="fa fa-music" aria-hidden="true"></i>
+                </p>
                 <div class="form">
                     <form class="register-form" action="index.html" method="GET">
                         <input type="text" placeholder="username" name="username"autofocus=""/>
@@ -29,11 +35,11 @@
                 <nav class="navbar navbar-inverse">
                     <input type="text" class="nav-item" id="song" placeholder="Enter a song" autofocus="">
                     <input type="text" class="nav-item" id="artist" placeholder="Enter the artist">
-                    <input type="submit" class="nav-item btn btn-success" id="submit" value="Search">
-                    <input type="submit" id="view-playlist" class="nav-item btn btn-success"  value="View My Playlist">
+                    <input type="submit" class="btn btn-default" id="submit" value="Search">
+                    <input type="submit" id="view-playlist" class="btn btn-default"  value="View My Playlist">
                 </nav>
 
-                <div class="container">
+                <div class="results-container">
 
                     <div class="error">
 
@@ -71,8 +77,6 @@
 
 
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
         <script type="text/javascript" src="logic.js"></script>
         <script type="text/javascript" src="app.js"></script>
     </body>
