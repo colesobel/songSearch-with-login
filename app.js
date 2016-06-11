@@ -78,6 +78,7 @@ $(document).ready(function() {
     $('#view-playlist').on('click', getMongoLabData)
     $(document).on('click', '.result-tab', showPlayerHeader)
     $(document).on('click', '#thumbs-up', changeThumbColor)
+    $(document).on('click', '#thumbs-down', getTracksToDelete )
 
 
 
@@ -142,10 +143,10 @@ $(document).ready(function() {
     }
 
     function showPlayerHeader() {
-    $('.player-header').show(500)
-    $('.player').show(500)
-    callToSpotify(this)
-}
+        $('.player-header').slideDown()
+        $('.player').slideDown()
+        callToSpotify(this)
+    }
 
     function callToSpotify(elem) {
         spotifyTrackName = $(elem).attr('data-track')
@@ -196,11 +197,11 @@ $(document).ready(function() {
                 }
             }
         })
-        updateDatabasePlaylist(mongoId)
+        updateDatabasePlaylist(mongoId, currentSelections)
     }
 
 
-    function updateDatabasePlaylist(mongoId) {
+    function updateDatabasePlaylist(mongoId, currentSelections) {
         $.ajax({
             type: 'PUT',
             url: `https://api.mlab.com/api/1/databases/songsearch/collections/playlist/${mongoId}?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb`,
@@ -228,15 +229,33 @@ $(document).ready(function() {
         data.forEach(function(account) {
             if (account.userName === userName) {
                 for (track in account.tracks) {
-                    var div = document.createElement('div')
-                    $(div).addClass('playlist-result')
-                    $(div).attr('data-track', track)
-                    $(div).attr('data-artist', account.tracks[track])
-                    $(div).html(`${track}, ${account.tracks[track]}`)
-                    $('.songs').append(div)
+                    var li = document.createElement('li')
+                    $(li).addClass('playlist-result')
+                    $(li).addClass('list-group-item')
+                    $(li).attr('data-track', track)
+                    $(li).attr('data-artist', account.tracks[track])
+                    $(li).html(`${track}, ${account.tracks[track]} <i id="thumbs-down" class="fa fa-thumbs-o-down" aria-hidden="true"></i>`)
+                    $('.songs').append(li)
                 }
             }
         })
     }
 
+
+    function getTracksToDelete() {
+        var trackToDelete = $(this).parent().attr('data-track')
+        $.ajax({
+            url: 'https://api.mlab.com/api/1/databases/songsearch/collections/playlist?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb'
+        }).done(function(data) {
+            data.forEach(function(account) {
+                if (account.userName === userName) {
+                    var mongoId = account._id.$oid
+                    var tempTracks = account.tracks
+                    delete tempTracks[trackToDelete]
+                    updateDatabasePlaylist(mongoId, tempTracks)
+                }
+            })
+            displayUserPlaylist(data)
+        })
+    }
 })

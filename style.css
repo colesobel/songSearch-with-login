@@ -207,6 +207,18 @@ body {
 
 #thumbs-up:hover {
     cursor: pointer;
+    color: #b01b1b;
+}
+
+#thumbs-down {
+    font-size: 1.5em;
+    position: absolute;
+    right: 5px;
+    top: 35%;
+}
+
+#thumbs-down:hover {
+    color: #b01b1b;
 }
 
 .thumbs-up-clicked {
@@ -215,4 +227,17 @@ body {
 
 audio {
     cursor: pointer;
+}
+
+.my-playlist {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    /*top: -75px;*/
+}
+
+.playlist-title {
+    font-size: 2em;
 }
