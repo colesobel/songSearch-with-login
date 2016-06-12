@@ -18,12 +18,20 @@ $(document).ready(function() {
 
     $('#login').click(function() {
         event.preventDefault()
-        accessMongoLab(checkForExistingAccount)
+        if ($('#login-username').val() !== '' && $('#login-user-pass').val() !== '') {
+            accessMongoLab(checkForExistingAccount)
+        } else {
+            alert('Please enter a username and password')
+        }
     })
 
     $('#createUser').click(function() {
         event.preventDefault()
-        createAccount()
+        if ($('#create-username').val() !== '' && $('#create-user-pass').val() !== '') {
+            createAccount()
+        } else {
+            alert('Please enter a username and password')
+        }
     })
 
     function accessMongoLab(callback) {
@@ -51,8 +59,8 @@ $(document).ready(function() {
     }
 
     function createAccount() {
-        userName = $('#login-username').val()
-        userPass = $('#login-user-pass').val()
+        userName = $('#create-username').val()
+        userPass = $('#create-user-pass').val()
         $.ajax({
             type: 'POST',
             url: 'https://api.mlab.com/api/1/databases/songsearch/collections/playlist?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb',
@@ -78,7 +86,7 @@ $(document).ready(function() {
     $('#view-playlist').on('click', getMongoLabData)
     $(document).on('click', '.result-tab', showPlayerHeader)
     $(document).on('click', '#thumbs-up', changeThumbColor)
-    $(document).on('click', '#thumbs-down', getTracksToDelete )
+    $(document).on('click', '.remove', getTracksToDelete )
 
 
 
@@ -102,7 +110,7 @@ $(document).ready(function() {
     function getSimilarTracks() {
         $('.results-container').children().hide(500)
         $.ajax({
-            url: `http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=${userArtist}&track=${userTrack}&api_key=${apiKey}&format=json`
+            url: `https://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=${userArtist}&track=${userTrack}&api_key=${apiKey}&format=json`
         }).done(function(data) {
             checkForValidData(data)
         })
@@ -124,7 +132,9 @@ $(document).ready(function() {
     function appendSimilarTracks(similarTracks) {
         $('.results').empty()
         $('.results').show(500)
-        similarTracks.forEach(function(elem) {
+        // similarTracks.forEach(function(elem) {
+        for(var i = 0; i < 50; i++) {
+            var elem = similarTracks[i]
             var trackTitle = elem.name
             var artistName = elem.artist.name
             var resultTab = document.createElement('li')
@@ -139,7 +149,8 @@ $(document).ready(function() {
             trackInfo.innerHTML = `${trackTitle}, ${artistName}`
             $(resultTab).append(trackInfo)
             $('.results').append(resultTab)
-        })
+        }
+        // })
     }
 
     function showPlayerHeader() {
@@ -223,6 +234,8 @@ $(document).ready(function() {
         $('.results').hide(500)
         $('.player-header').hide(500)
         $('.player').hide(500)
+        $('.error').hide(500)
+        $('.no-input').hide(500)
         $('.songs').empty()
         $('.my-playlist').show(500)
         $('.songs').show(500)
@@ -234,7 +247,7 @@ $(document).ready(function() {
                     $(li).addClass('list-group-item')
                     $(li).attr('data-track', track)
                     $(li).attr('data-artist', account.tracks[track])
-                    $(li).html(`${track}, ${account.tracks[track]} <i id="thumbs-down" class="fa fa-thumbs-o-down" aria-hidden="true"></i>`)
+                    $(li).html(`${track}, ${account.tracks[track]} <img class="remove" src="circlex.png"/>`)
                     $('.songs').append(li)
                 }
             }

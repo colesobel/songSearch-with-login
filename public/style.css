@@ -164,7 +164,7 @@ body {
 }
 #guide {
     align-self: center;
-    font-size: 3em;
+    font-size: 2.5em;
 }
 
 .player-header {
@@ -174,7 +174,6 @@ body {
 .results {
     display: flex;
     flex-wrap: wrap;
-    /*border: 2px solid black;*/
     width: 900px;
     justify-content: space-around;
 }
@@ -207,22 +206,20 @@ body {
 
 #thumbs-up:hover {
     cursor: pointer;
-    color: #b01b1b;
+    color: #1ec320;
 }
 
-#thumbs-down {
-    font-size: 1.5em;
+.remove {
     position: absolute;
     right: 5px;
-    top: 35%;
 }
 
-#thumbs-down:hover {
-    color: #b01b1b;
+.remove:hover {
+    cursor: pointer;
 }
 
 .thumbs-up-clicked {
-    color: #b01b1b;
+    color: #1ec320;
 }
 
 audio {
@@ -235,9 +232,16 @@ audio {
     justify-content: center;
     text-align: center;
     position: relative;
-    /*top: -75px;*/
 }
 
 .playlist-title {
+    font-size: 2em;
+}
+
+.playlist-result-container {
+
+}
+
+.error, .no-input {
     font-size: 2em;
 }

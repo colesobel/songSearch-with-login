@@ -2,8 +2,8 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/darkly/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
         <script src="https://use.fontawesome.com/47c4710be2.js"></script>
         <link rel="stylesheet" href="style.css">
@@ -18,8 +18,8 @@
                 </p>
                 <div class="form">
                     <form class="register-form" action="index.html" method="GET">
-                        <input type="text" placeholder="username" name="username"autofocus=""/>
-                        <input type="password" placeholder="password"/>
+                        <input type="text" placeholder="username" name="username"autofocus="" id="create-username"/>
+                        <input type="password" placeholder="password" id="create-user-pass"/>
                         <input type="submit" value="Create" class="button" id="createUser"/>
                         <p class="message">Already registered? <a href="#">Sign In</a></p>
                     </form>
@@ -55,7 +55,7 @@
                     </div>
 
                     <p id="guide">
-                        Find new music by entering a track to anchor your search
+                        Find new music by entering a track and its artist to anchor your search
                     </p>
 
 
@@ -64,11 +64,12 @@
                     </ul>
 
                     <div class="my-playlist">
-                        <p class="playlist-title">My Playlist</p>
-                        <!-- <input type="submit" id="mongo-playlist"value="View my saved playlist"> -->
-                        <ul class="songs list-group">
+                        <div class="playlist-result-container">
+                            <p class="playlist-title">My Playlist</p>
+                            <ul class="songs list-group">
 
-                        </ul>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </main>
