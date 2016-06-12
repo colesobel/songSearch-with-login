@@ -28,7 +28,8 @@ $(document).ready(function() {
     $('#createUser').click(function() {
         event.preventDefault()
         if ($('#create-username').val() !== '' && $('#create-user-pass').val() !== '') {
-            createAccount()
+            accessMongoLab(ensureNoDuplicateAccount)
+            // createAccount()
         } else {
             alert('Please enter a username and password')
         }
@@ -40,6 +41,20 @@ $(document).ready(function() {
         }).done(function(data) {
             callback(data)
         })
+    }
+
+    function ensureNoDuplicateAccount(data) {
+        var exists = false
+        data.forEach(function(account) {
+            if (account.userName === $('#create-username').val()) {
+                exists = true
+            }
+        })
+        if (exists) {
+            alert('Username already exists. Please select another')
+        } else {
+            createAccount()
+        }
     }
 
     function checkForExistingAccount(data) {
