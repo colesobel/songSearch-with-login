@@ -212,10 +212,15 @@ body {
 .remove {
     position: absolute;
     right: 5px;
+    top: 50%;
+    margin-top: -15px;
+    color: #c51c1c;
+    font-size: 30px !important;
 }
 
 .remove:hover {
     cursor: pointer;
+    color: red;
 }
 
 .thumbs-up-clicked {
@@ -242,6 +247,24 @@ audio {
 
 }
 
+.playlist-result {
+    display: flex;
+    align-items: center;
+}
+
 .error, .no-input {
     font-size: 2em;
+}
+
+
+.play-button {
+    font-size: 30px !important;
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    margin-top: -15px;
+}
+
+.play-button:hover {
+    color: #1ec320;
 }

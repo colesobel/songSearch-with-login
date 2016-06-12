@@ -88,6 +88,9 @@ $(document).ready(function() {
     $(document).on('click', '#thumbs-up', changeThumbColor)
     $(document).on('click', '.remove', getTracksToDelete )
 
+    //Test
+    $(document).on('click', '.play-button', showPlayerHeader)
+
 
 
 
@@ -132,7 +135,6 @@ $(document).ready(function() {
     function appendSimilarTracks(similarTracks) {
         $('.results').empty()
         $('.results').show(500)
-        // similarTracks.forEach(function(elem) {
         for(var i = 0; i < 50; i++) {
             var elem = similarTracks[i]
             var trackTitle = elem.name
@@ -150,13 +152,16 @@ $(document).ready(function() {
             $(resultTab).append(trackInfo)
             $('.results').append(resultTab)
         }
-        // })
     }
 
     function showPlayerHeader() {
         $('.player-header').slideDown()
         $('.player').slideDown()
-        callToSpotify(this)
+        if(this.tagName === 'I') {
+            callToSpotify($(this).parent())
+        } else {
+            callToSpotify(this)
+        }
     }
 
     function callToSpotify(elem) {
@@ -247,7 +252,7 @@ $(document).ready(function() {
                     $(li).addClass('list-group-item')
                     $(li).attr('data-track', track)
                     $(li).attr('data-artist', account.tracks[track])
-                    $(li).html(`${track}, ${account.tracks[track]} <img class="remove" src="circlex.png"/>`)
+                    $(li).html(`${track}, ${account.tracks[track]} <i class="play-button fa fa-play-circle-o" aria-hidden="true"></i> <i class="remove fa fa-times" aria-hidden="true"></i>`)
                     $('.songs').append(li)
                 }
             }
