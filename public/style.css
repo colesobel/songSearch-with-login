@@ -260,7 +260,7 @@ audio {
 .play-button {
     font-size: 30px !important;
     position: absolute;
-    right: 35px;
+    right: 40px;
     top: 50%;
     margin-top: -15px;
 }

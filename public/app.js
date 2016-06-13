@@ -1,3 +1,5 @@
+// Youtube video search url https://www.googleapis.com/youtube/v3/search?part=snippet&q=higher+love+steve+winwood&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw
+
 $(document).ready(function() {
     var userName = ''
     var userPass = ''
@@ -9,6 +11,8 @@ $(document).ready(function() {
     var apiKey = 'd78ab56ad21c652f6fcaed4ae1d11a2a'
     var currentSelections = {}
     var userTracks = {}
+    var accessToken = ''
+    var youtubeAccess = false
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -100,11 +104,9 @@ $(document).ready(function() {
     $('#submit').on('click', checkUserInput)
     $('#view-playlist').on('click', getMongoLabData)
     $(document).on('click', '.result-tab', showPlayerHeader)
+    $(document).on('click', '.play-button', showPlayerHeader)
     $(document).on('click', '#thumbs-up', changeThumbColor)
     $(document).on('click', '.remove', getTracksToDelete )
-
-    //Test
-    $(document).on('click', '.play-button', showPlayerHeader)
 
 
 
@@ -291,4 +293,53 @@ $(document).ready(function() {
             displayUserPlaylist(data)
         })
     }
+
+    $('.youtube-auth').click(function() {
+        youtubeAccess = true
+    })
+
+    $(document).on('click', '#create-playlist', checkYoutubeAccess)
+
+    function checkYoutubeAccess() {
+        if (youtubeAccess) {
+            getAccessToken()
+        } else {
+            alert('You must grant Youtube access before uploading')
+        }
+    }
+
+    function getAccessToken() {
+        var fullHash = window.location.hash
+        var firstEquals = fullHash.indexOf('=')
+        var andSign = fullHash.indexOf('&')
+        accessToken = fullHash.substring(firstEquals + 1, andSign)
+        validateAccessToken(accessToken)
+    }
+
+    function validateAccessToken(accessToken) {
+        $.ajax({
+            url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
+        }).done(function() {
+            UploadToYoutube(accessToken)
+        })
+    }
+
+    function UploadToYoutube(accessToken) {
+        $.ajax({
+            type: 'POST',
+            url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                 "snippet": {
+                  "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
+                  "resourceId": {
+                   "kind": "youtube#video",
+                   "videoId": "ru0K8uYEZWw"
+                  },
+                  "position": 0
+                 }
+            })
+        })
+    }
+
 })
