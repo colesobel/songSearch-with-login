@@ -12,7 +12,7 @@ $(document).ready(function() {
     var currentSelections = {}
     var userTracks = {}
     var accessToken = ''
-    var youtubeAccess = false
+    var videoIds = []
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -33,7 +33,6 @@ $(document).ready(function() {
         event.preventDefault()
         if ($('#create-username').val() !== '' && $('#create-user-pass').val() !== '') {
             accessMongoLab(ensureNoDuplicateAccount)
-            // createAccount()
         } else {
             alert('Please enter a username and password')
         }
@@ -70,6 +69,7 @@ $(document).ready(function() {
                 $('.login-page').hide()
                 $('.main').show()
                 $('.my-playlist').hide()
+                populateCurrentSelections()
             }
         })
         if (!hasAccount) {
@@ -94,11 +94,21 @@ $(document).ready(function() {
             $('.login-page').hide()
             $('.main').show()
             $('.my-playlist').hide()
+            populateCurrentSelections()
         })
     }
 
-
-
+    function populateCurrentSelections() {
+        accessMongoLab(function(data) {
+            data.forEach(function(account) {
+                if (account.userName === userName && account.passWord === userPass) {
+                    for (song in account.tracks) {
+                        currentSelections[song] = account.tracks[song]
+                    }
+                }
+            })
+        })
+    }
 
     //on click events
     $('#submit').on('click', checkUserInput)
@@ -107,8 +117,6 @@ $(document).ready(function() {
     $(document).on('click', '.play-button', showPlayerHeader)
     $(document).on('click', '#thumbs-up', changeThumbColor)
     $(document).on('click', '.remove', getTracksToDelete )
-
-
 
 
     function checkUserInput(callback) {
@@ -125,8 +133,6 @@ $(document).ready(function() {
         getSimilarTracks()
     }
 
-
-
     function getSimilarTracks() {
         $('.results-container').children().hide(500)
         $.ajax({
@@ -135,8 +141,6 @@ $(document).ready(function() {
             checkForValidData(data)
         })
     }
-
-
 
     function checkForValidData(data) {
         if (data.message === 'Track not found' || data.similartracks.track.length === 0) {
@@ -147,7 +151,6 @@ $(document).ready(function() {
             })
         }
     }
-
 
     function appendSimilarTracks(similarTracks) {
         $('.results').empty()
@@ -276,7 +279,6 @@ $(document).ready(function() {
         })
     }
 
-
     function getTracksToDelete() {
         var trackToDelete = $(this).parent().attr('data-track')
         $.ajax({
@@ -294,14 +296,10 @@ $(document).ready(function() {
         })
     }
 
-    $('.youtube-auth').click(function() {
-        youtubeAccess = true
-    })
+    $(document).on('click', '#create-playlist', checkForAccessToken)
 
-    $(document).on('click', '#create-playlist', checkYoutubeAccess)
-
-    function checkYoutubeAccess() {
-        if (youtubeAccess) {
+    function checkForAccessToken() {
+        if (window.location.hash.includes('access_token')) {
             getAccessToken()
         } else {
             alert('You must grant Youtube access before uploading')
@@ -320,11 +318,44 @@ $(document).ready(function() {
         $.ajax({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
         }).done(function() {
-            UploadToYoutube(accessToken)
+            // UploadToYoutube(accessToken)
+            getYoutubeVideoIds()
         })
     }
 
-    function UploadToYoutube(accessToken) {
+    function getYoutubeVideoIds() {
+        accessMongoLab(function(data) {
+            getMyAccount(data, function(account) {
+                populateYoutubeIds(account.tracks);
+            })
+        })
+    }
+
+    function getMyAccount(data, callback) {
+        data.forEach(function(account) {
+            if (account.userName === userName && account.passWord === userPass) {
+                callback(account)
+            }
+        })
+    }
+
+    function populateYoutubeIds(tracks) {
+        for (song in tracks) {
+            var searchString = `${song} ${tracks[song]}`
+            getId(searchString)
+        }
+    }
+
+    function getId(searchString) {
+        $.ajax({
+            url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`
+        }).done(function(data) {
+            var videoId = data.items[0].id.videoId
+            UploadToYoutube(accessToken, videoId)
+        })
+    }
+
+    function UploadToYoutube(accessToken, videoId) {
         $.ajax({
             type: 'POST',
             url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
@@ -334,11 +365,13 @@ $(document).ready(function() {
                   "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
                   "resourceId": {
                    "kind": "youtube#video",
-                   "videoId": "ru0K8uYEZWw"
+                   "videoId": `${videoId}`
                   },
                   "position": 0
                  }
             })
+        }).done(function() {
+            console.log('video uploaded successfully')
         })
     }
 
