@@ -69,7 +69,7 @@ $(document).ready(function() {
                 $('.login-page').hide()
                 $('.main').show()
                 $('.my-playlist').hide()
-                populateCurrentSelections()
+                // populateCurrentSelections()
             }
         })
         if (!hasAccount) {
@@ -94,21 +94,21 @@ $(document).ready(function() {
             $('.login-page').hide()
             $('.main').show()
             $('.my-playlist').hide()
-            populateCurrentSelections()
+            // populateCurrentSelections()
         })
     }
 
-    function populateCurrentSelections() {
-        accessMongoLab(function(data) {
-            data.forEach(function(account) {
-                if (account.userName === userName && account.passWord === userPass) {
-                    for (song in account.tracks) {
-                        currentSelections[song] = account.tracks[song]
-                    }
-                }
-            })
-        })
-    }
+    // function populateCurrentSelections() {
+    //     accessMongoLab(function(data) {
+    //         data.forEach(function(account) {
+    //             if (account.userName === userName && account.passWord === userPass) {
+    //                 for (song in account.tracks) {
+    //                     currentSelections[song] = account.tracks[song]
+    //                 }
+    //             }
+    //         })
+    //     })
+    // }
 
     //on click events
     $('#submit').on('click', checkUserInput)
@@ -342,20 +342,24 @@ $(document).ready(function() {
     function populateYoutubeIds(tracks) {
         for (song in tracks) {
             var searchString = `${song} ${tracks[song]}`
+            console.log('setting search string to ' + searchString);
             getId(searchString)
         }
     }
 
     function getId(searchString) {
+        console.log('getting id...');
         $.ajax({
-            url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`
-        }).done(function(data) {
-            var videoId = data.items[0].id.videoId
-            UploadToYoutube(accessToken, videoId)
+            url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
+            success: function(data) {
+                var videoId = data.items[0].id.videoId
+                UploadToYoutube(accessToken, videoId)
+            }
         })
     }
 
     function UploadToYoutube(accessToken, videoId) {
+        console.log('uploading ' + videoId + ' to youtube with access token ' + accessToken);
         $.ajax({
             type: 'POST',
             url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
