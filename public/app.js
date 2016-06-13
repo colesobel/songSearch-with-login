@@ -12,7 +12,7 @@ $(document).ready(function() {
     var currentSelections = {}
     var userTracks = {}
     var accessToken = ''
-    var videoIds = []
+    // var videoIds = []
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -331,6 +331,69 @@ $(document).ready(function() {
         })
     }
 
+    function populateYoutubeIds(tracks) {
+        var videoIds = []
+        for (song in tracks) {
+            var searchString = `${song} ${tracks[song]}`
+            // getId(searchString)
+            $.ajax({
+                url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
+                success: function(data) {
+                    videoIds.push(data.items[0].id.videoId)
+                }
+            })
+        }
+        setTimeout(function() {
+            UploadToYoutube(accessToken, videoIds)
+        }, 3000)
+    }
+
+    function UploadToYoutube(accessToken, videoIds) {
+        for (var i = 0; i < videoIds.length; i++) {
+            console.log('uploading ' + videoIds[i] + ' to youtube with access token ' + accessToken);
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "snippet": {
+                        "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
+                        "resourceId": {
+                            "kind": "youtube#video",
+                            "videoId": `${videoIds[i]}`
+                        },
+                        "position": 0
+                    }
+                })
+            }).done(function() {
+                console.log('video uploaded successfully')
+            })
+        }
+    }
+
+
+
+
+
+//
+//     function validateAccessToken(accessToken) {
+//         $.ajax({
+//             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
+//         }).done(function() {
+//             // UploadToYoutube(accessToken)
+//             getYoutubeVideoIds()
+//         })
+//     }
+//
+//     function getYoutubeVideoIds() {
+//         accessMongoLab(function(data) {
+//             getMyAccount(data, function(account) {
+//                 populateYoutubeIds(account.tracks);
+//             })
+//         })
+//     }
+//
     function getMyAccount(data, callback) {
         data.forEach(function(account) {
             if (account.userName === userName && account.passWord === userPass) {
@@ -338,45 +401,44 @@ $(document).ready(function() {
             }
         })
     }
-
-    function populateYoutubeIds(tracks) {
-        for (song in tracks) {
-            var searchString = `${song} ${tracks[song]}`
-            console.log('setting search string to ' + searchString);
-            getId(searchString)
-        }
-    }
-
-    function getId(searchString) {
-        console.log('getting id...');
-        $.ajax({
-            url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
-            success: function(data) {
-                var videoId = data.items[0].id.videoId
-                UploadToYoutube(accessToken, videoId)
-            }
-        })
-    }
-
-    function UploadToYoutube(accessToken, videoId) {
-        console.log('uploading ' + videoId + ' to youtube with access token ' + accessToken);
-        $.ajax({
-            type: 'POST',
-            url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
-            contentType: 'application/json',
-            data: JSON.stringify({
-                 "snippet": {
-                  "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
-                  "resourceId": {
-                   "kind": "youtube#video",
-                   "videoId": `${videoId}`
-                  },
-                  "position": 0
-                 }
-            })
-        }).done(function() {
-            console.log('video uploaded successfully')
-        })
-    }
-
+//
+//     function populateYoutubeIds(tracks) {
+//         for (song in tracks) {
+//             var searchString = `${song} ${tracks[song]}`
+//             console.log('setting search string to ' + searchString);
+//             getId(searchString)
+//         }
+//     }
+//
+    // function getId(searchString) {
+    //     console.log('getting id...');
+    //     $.ajax({
+    //         url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
+    //         success: function(data) {
+    //             var videoId = data.items[0].id.videoId
+    //             UploadToYoutube(accessToken, videoId)
+    //         }
+    //     })
+    // }
+//
+//     function UploadToYoutube(accessToken, videoId) {
+//         console.log('uploading ' + videoId + ' to youtube with access token ' + accessToken);
+//         $.ajax({
+//             type: 'POST',
+//             url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+//             contentType: 'application/json',
+//             data: JSON.stringify({
+//                  "snippet": {
+//                   "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
+//                   "resourceId": {
+//                    "kind": "youtube#video",
+//                    "videoId": `${videoId}`
+//                   },
+//                   "position": 0
+//                  }
+//             })
+//         }).done(function() {
+//             console.log('video uploaded successfully')
+//         })
+//     }
 })
