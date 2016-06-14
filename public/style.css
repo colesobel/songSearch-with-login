@@ -252,7 +252,7 @@ audio {
     align-items: center;
 }
 
-.error, .no-input {
+.error, .no-input, .uploading-tracks {
     font-size: 2em;
 }
 

@@ -324,6 +324,8 @@ $(document).ready(function() {
 
     function nameANewPlaylist() {
         var playlistName = prompt('What would you like to name your playlist?')
+        $('.results-container').children().hide()
+        $('.uploading-tracks').html('Please wait while your tracks are being uploaded. This may take a few moments...').slideDown(500)
         createPlaylistPostRequest(playlistName, 'My new playlist!')
     }
 
@@ -400,7 +402,16 @@ $(document).ready(function() {
                 })
             })
         }
-        alert(`Playlist complete. Please head to https://www.youtube.com/playlist?list=${playlistId} to view listen to your playlist`)
+        addListenButton()
     }
 
+    function addListenButton() {
+        var listen = document.createElement('a')
+        $(listen).attr('href', `https://www.youtube.com/playlist?list=${playlistId}`)
+        $(listen).attr('target', 'blank')
+        $(listen).html('Listen!')
+        $(listen).addClass('listen btn btn-success')
+        $('.navbar').append(listen)
+        $('.uploading-tracks').html('Click \'Listen!\' to listen to your playlist')
+    }
 })
