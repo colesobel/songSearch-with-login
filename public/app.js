@@ -12,7 +12,7 @@ $(document).ready(function() {
     var currentSelections = {}
     var userTracks = {}
     var accessToken = ''
-    // var videoIds = []
+    var playlistId = ''
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -339,18 +339,15 @@ $(document).ready(function() {
                     "description": `${description}`
                 }
             })
-        }).done(function(playlistName) {
-            retrieveNewPlaylistId(playlistName)
+        }).done(function(data) {
+            retrieveNewPlaylistId(data)
         })
     }
 
-    function retrieveNewPlaylistId(playlistName) {
-        console.log(playlistName);
+    function retrieveNewPlaylistId(data) {
+        playlistId = data.id
+        getYoutubeVideoIds()
     }
-
-
-
-
 
     function getYoutubeVideoIds() {
         accessMongoLab(function(data) {
@@ -393,16 +390,17 @@ $(document).ready(function() {
                 contentType: 'application/json',
                 data: JSON.stringify({
                     "snippet": {
-                        "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
+                        "playlistId": playlistId,
                         "resourceId": {
                             "kind": "youtube#video",
-                            "videoId": `${videoIds[i]}`
+                            "videoId": videoIds[i]
                         },
                         "position": 0
                     }
                 })
             })
         }
+        alert(`Playlist complete. Please head to https://www.youtube.com/playlist?list=${playlistId} to view listen to your playlist`)
     }
 
 })
