@@ -318,10 +318,39 @@ $(document).ready(function() {
         $.ajax({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
         }).done(function() {
-            // UploadToYoutube(accessToken)
-            getYoutubeVideoIds()
+            nameANewPlaylist()
         })
     }
+
+    function nameANewPlaylist() {
+        var playlistName = prompt('What would you like to name your playlist?')
+        createPlaylistPostRequest(playlistName, 'My new playlist!')
+    }
+
+    function createPlaylistPostRequest(playlistName, description) {
+        $.ajax({
+            type: 'POST',
+            url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "snippet": {
+                    "title": `${playlistName}`,
+                    "description": `${description}`
+                }
+            })
+        }).done(function(playlistName) {
+            retrieveNewPlaylistId(playlistName)
+        })
+    }
+
+    function retrieveNewPlaylistId(playlistName) {
+        console.log(playlistName);
+    }
+
+
+
+
 
     function getYoutubeVideoIds() {
         accessMongoLab(function(data) {
@@ -331,21 +360,27 @@ $(document).ready(function() {
         })
     }
 
+    function getMyAccount(data, callback) {
+        data.forEach(function(account) {
+            if (account.userName === userName && account.passWord === userPass) {
+                callback(account)
+            }
+        })
+    }
+
     function populateYoutubeIds(tracks) {
         var videoIds = []
         for (song in tracks) {
             var searchString = `${song} ${tracks[song]}`
-            // getId(searchString)
             $.ajax({
                 url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
+                async: false,
                 success: function(data) {
                     videoIds.push(data.items[0].id.videoId)
                 }
             })
         }
-        setTimeout(function() {
-            UploadToYoutube(accessToken, videoIds)
-        }, 3000)
+        UploadToYoutube(accessToken, videoIds)
     }
 
     function UploadToYoutube(accessToken, videoIds) {
@@ -366,79 +401,8 @@ $(document).ready(function() {
                         "position": 0
                     }
                 })
-            }).done(function() {
-                console.log('video uploaded successfully')
             })
         }
     }
 
-
-
-
-
-//
-//     function validateAccessToken(accessToken) {
-//         $.ajax({
-//             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
-//         }).done(function() {
-//             // UploadToYoutube(accessToken)
-//             getYoutubeVideoIds()
-//         })
-//     }
-//
-//     function getYoutubeVideoIds() {
-//         accessMongoLab(function(data) {
-//             getMyAccount(data, function(account) {
-//                 populateYoutubeIds(account.tracks);
-//             })
-//         })
-//     }
-//
-    function getMyAccount(data, callback) {
-        data.forEach(function(account) {
-            if (account.userName === userName && account.passWord === userPass) {
-                callback(account)
-            }
-        })
-    }
-//
-//     function populateYoutubeIds(tracks) {
-//         for (song in tracks) {
-//             var searchString = `${song} ${tracks[song]}`
-//             console.log('setting search string to ' + searchString);
-//             getId(searchString)
-//         }
-//     }
-//
-    // function getId(searchString) {
-    //     console.log('getting id...');
-    //     $.ajax({
-    //         url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
-    //         success: function(data) {
-    //             var videoId = data.items[0].id.videoId
-    //             UploadToYoutube(accessToken, videoId)
-    //         }
-    //     })
-    // }
-//
-//     function UploadToYoutube(accessToken, videoId) {
-//         console.log('uploading ' + videoId + ' to youtube with access token ' + accessToken);
-//         $.ajax({
-//             type: 'POST',
-//             url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
-//             contentType: 'application/json',
-//             data: JSON.stringify({
-//                  "snippet": {
-//                   "playlistId": "PLf9KlP7F4ZswNE5SatZiz95pjd0ATIym1",
-//                   "resourceId": {
-//                    "kind": "youtube#video",
-//                    "videoId": `${videoId}`
-//                   },
-//                   "position": 0
-//                  }
-//             })
-//         }).done(function() {
-//             console.log('video uploaded successfully')
-//         })
-//     }
 })

@@ -17,3 +17,15 @@ youtube client secret:
 
 web auth server:
 https://accounts.google.com/o/oauth2/auth?client_id=719644486942-miua9p0o58of75b40r06hcgfbkpb2njm.apps.googleusercontent.com&redirect_uri=https://project-3022223182424588945.firebaseapp.com&scope=https://www.googleapis.com/auth/youtube&response_type=token
+
+
+url to post to to create a new playlist:
+https://www.googleapis.com/youtube/v3/playlists?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw
+
+request body for creating a new playlist:
+{
+    "snippet":{
+    "title":"Cole's test playlist"
+    "description": "to test out my app"
+    }
+}
