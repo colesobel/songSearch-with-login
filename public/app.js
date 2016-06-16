@@ -1,5 +1,3 @@
-// Youtube video search url https://www.googleapis.com/youtube/v3/search?part=snippet&q=higher+love+steve+winwood&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw
-
 $(document).ready(function() {
     var userName = ''
     var userPass = ''
@@ -13,6 +11,8 @@ $(document).ready(function() {
     var userTracks = {}
     var accessToken = ''
     var playlistId = ''
+    var isPlaylistPage = false
+    console.log('should work');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -29,7 +29,7 @@ $(document).ready(function() {
         }
     })
 
-    $('#createUser').click(function() {
+    $('#User').click(function() {
         event.preventDefault()
         if ($('#create-username').val() !== '' && $('#create-user-pass').val() !== '') {
             accessMongoLab(ensureNoDuplicateAccount)
@@ -69,7 +69,6 @@ $(document).ready(function() {
                 $('.login-page').hide()
                 $('.main').show()
                 $('.my-playlist').hide()
-                // populateCurrentSelections()
             }
         })
         if (!hasAccount) {
@@ -94,21 +93,9 @@ $(document).ready(function() {
             $('.login-page').hide()
             $('.main').show()
             $('.my-playlist').hide()
-            // populateCurrentSelections()
         })
     }
 
-    // function populateCurrentSelections() {
-    //     accessMongoLab(function(data) {
-    //         data.forEach(function(account) {
-    //             if (account.userName === userName && account.passWord === userPass) {
-    //                 for (song in account.tracks) {
-    //                     currentSelections[song] = account.tracks[song]
-    //                 }
-    //             }
-    //         })
-    //     })
-    // }
 
     //on click events
     $('#submit').on('click', checkUserInput)
@@ -117,6 +104,12 @@ $(document).ready(function() {
     $(document).on('click', '.play-button', showPlayerHeader)
     $(document).on('click', '#thumbs-up', changeThumbColor)
     $(document).on('click', '.remove', getTracksToDelete )
+    $(document).on('click', '#view-playlist', function() {
+        isPlaylistPage = true
+    })
+    $(document).on('click', '#submit', function() {
+        isPlaylistPage = false
+    })
 
 
     function checkUserInput(callback) {
@@ -146,32 +139,29 @@ $(document).ready(function() {
         if (data.message === 'Track not found' || data.similartracks.track.length === 0) {
             $('.error').html('Sorry, no track information found').slideDown(500)
         } else {
+            $('.results').empty()
+            $('.results').show(500)
             data.similartracks.track.forEach(function(track) {
-                appendSimilarTracks(data.similartracks.track)
+                appendSimilarTracks(track)
             })
         }
     }
 
-    function appendSimilarTracks(similarTracks) {
-        $('.results').empty()
-        $('.results').show(500)
-        for(var i = 0; i < 50; i++) {
-            var elem = similarTracks[i]
-            var trackTitle = elem.name
-            var artistName = elem.artist.name
-            var resultTab = document.createElement('li')
-            $(resultTab).addClass('result-tab')
-            $(resultTab).addClass("list-group-item")
-            $(resultTab).attr('data-track', trackTitle)
-            $(resultTab).attr('data-artist', artistName)
-            var img = document.createElement('img')
-            img.src = elem.image[0]['#text']
-            $(img).appendTo(resultTab)
-            var trackInfo = document.createElement('p')
-            trackInfo.innerHTML = `${trackTitle}, ${artistName}`
-            $(resultTab).append(trackInfo)
-            $('.results').append(resultTab)
-        }
+    function appendSimilarTracks(elem) {
+        var trackTitle = elem.name
+        var artistName = elem.artist.name
+        var resultTab = document.createElement('li')
+        $(resultTab).addClass('result-tab')
+        $(resultTab).addClass("list-group-item")
+        $(resultTab).attr('data-track', trackTitle)
+        $(resultTab).attr('data-artist', artistName)
+        var img = document.createElement('img')
+        img.src = elem.image[0]['#text']
+        $(img).appendTo(resultTab)
+        var trackInfo = document.createElement('p')
+        trackInfo.innerHTML = `${trackTitle}, ${artistName}`
+        $(resultTab).append(trackInfo)
+        $('.results').append(resultTab)
     }
 
     function showPlayerHeader() {
@@ -198,6 +188,9 @@ $(document).ready(function() {
         $('.player').empty()
         $('.player-header').empty()
         $('.player-header').append(`<p data-track="${spotifyTrackName}" data-artist="${spotifyArtistName}"> ${spotifyTrackName}, ${spotifyArtistName} &nbsp <i id="thumbs-up" class="fa fa-thumbs-o-up" aria-hidden="true"></i></p>`)
+        if (isPlaylistPage) {
+            $('#thumbs-up').hide()
+        }
         var found = false
         for (var i = 0; i < tracks.length; i++) {
             if (containsAll(tracks[i].name, spotifyTrackName.toLowerCase()) && containsAll(tracks[i].artists[0].name, spotifyArtistName.toLowerCase())) {
@@ -311,13 +304,15 @@ $(document).ready(function() {
         var firstEquals = fullHash.indexOf('=')
         var andSign = fullHash.indexOf('&')
         accessToken = fullHash.substring(firstEquals + 1, andSign)
+        console.log(accessToken);
         validateAccessToken(accessToken)
     }
 
     function validateAccessToken(accessToken) {
         $.ajax({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
-        }).done(function() {
+        }).done(function(data) {
+            console.log(data);
             nameANewPlaylist()
         })
     }
@@ -332,7 +327,7 @@ $(document).ready(function() {
     function createPlaylistPostRequest(playlistName, description) {
         $.ajax({
             type: 'POST',
-            url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+            url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
             async: false,
             contentType: 'application/json',
             data: JSON.stringify({
@@ -340,11 +335,16 @@ $(document).ready(function() {
                     "title": `${playlistName}`,
                     "description": `${description}`
                 }
+                // "status": {
+                //     "privacyStatus": "public"
+                // }
             })
         }).done(function(data) {
             retrieveNewPlaylistId(data)
+            console.log(data);
         })
     }
+
 
     function retrieveNewPlaylistId(data) {
         playlistId = data.id
@@ -399,7 +399,10 @@ $(document).ready(function() {
                         },
                         "position": 0
                     }
-                })
+                }),
+                error: function(data) {
+                    console.log(data);
+                }
             })
         }
         addListenButton()
