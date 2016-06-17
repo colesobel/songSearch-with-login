@@ -12,7 +12,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('should work');
+    console.log('forced approval');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -29,7 +29,7 @@ $(document).ready(function() {
         }
     })
 
-    $('#User').click(function() {
+    $('#createUser').click(function() {
         event.preventDefault()
         if ($('#create-username').val() !== '' && $('#create-user-pass').val() !== '') {
             accessMongoLab(ensureNoDuplicateAccount)
@@ -68,6 +68,7 @@ $(document).ready(function() {
                 hasAccount = true
                 $('.login-page').hide()
                 $('.main').show()
+                checkYoutubeAuthorization()
                 $('.my-playlist').hide()
             }
         })
@@ -92,10 +93,20 @@ $(document).ready(function() {
             alert('account created successfully')
             $('.login-page').hide()
             $('.main').show()
+            checkYoutubeAuthorization()
             $('.my-playlist').hide()
         })
     }
 
+    function checkYoutubeAuthorization() {
+        if (window.location.hash.includes('access_token')) {
+            $('#youtube-auth').hide()
+            $('#create-playlist').show()
+        } else {
+            $('#create-playlist').hide()
+            $('#youtube-auth').show()
+        }
+    }
 
     //on click events
     $('#submit').on('click', checkUserInput)
@@ -214,7 +225,6 @@ $(document).ready(function() {
         accessMongoLab(findUserPlayList)
     }
 
-
     function findUserPlayList(data) {
         var mongoId = ''
         data.forEach(function(account) {
@@ -228,7 +238,6 @@ $(document).ready(function() {
         })
         updateDatabasePlaylist(mongoId, currentSelections)
     }
-
 
     function updateDatabasePlaylist(mongoId, currentSelections) {
         $.ajax({
@@ -335,9 +344,6 @@ $(document).ready(function() {
                     "title": `${playlistName}`,
                     "description": `${description}`
                 }
-                // "status": {
-                //     "privacyStatus": "public"
-                // }
             })
         }).done(function(data) {
             retrieveNewPlaylistId(data)
@@ -409,6 +415,8 @@ $(document).ready(function() {
     }
 
     function addListenButton() {
+        $('#create-playlist').hide()
+        $('#youtube-auth').hide()
         var listen = document.createElement('a')
         $(listen).attr('href', `https://www.youtube.com/playlist?list=${playlistId}`)
         $(listen).attr('target', 'blank')
