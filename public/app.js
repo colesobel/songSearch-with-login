@@ -12,7 +12,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('forced approval');
+    console.log('total test');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -205,6 +205,7 @@ $(document).ready(function() {
         var found = false
         for (var i = 0; i < tracks.length; i++) {
             if (containsAll(tracks[i].name, spotifyTrackName.toLowerCase()) && containsAll(tracks[i].artists[0].name, spotifyArtistName.toLowerCase())) {
+                console.log('this was found');
                 var audio = new Audio
                 audio.src = tracks[i].preview_url
                 audio.controls = 'controls'
@@ -313,7 +314,6 @@ $(document).ready(function() {
         var firstEquals = fullHash.indexOf('=')
         var andSign = fullHash.indexOf('&')
         accessToken = fullHash.substring(firstEquals + 1, andSign)
-        console.log(accessToken);
         validateAccessToken(accessToken)
     }
 

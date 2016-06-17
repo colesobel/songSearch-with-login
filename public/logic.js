@@ -1,6 +1,6 @@
 function containsAll(spotifyTitle,lastFMTitle) {
     var flag = true
-    lastFMTitle.toLowerCase().split(' ').forEach(function(elem) {
+    lastFMTitle.toLowerCase().replace(/\(([^\)]+)\)/, '').split(' ').forEach(function(elem) {
         if (!spotifyTitle.toLowerCase().includes(elem)) {
             flag = false
         }
@@ -8,13 +8,6 @@ function containsAll(spotifyTitle,lastFMTitle) {
     return flag
 }
 
+console.log(containsAll('Total Eclipse of the Heart (Sunset Strippers Verse Radio Edit)', 'Total Eclipse of the Heart'));
 
-function createNonce() {
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('')
-    var nonce = ''
-    for (var i = 0; i < 20; i++) {
-        var random = possible[Math.floor(Math.random() * possible.length)]
-        nonce += random
-    }
-    return nonce
-}
+console.log(containsAll('Westlife', 'Westlife'));
