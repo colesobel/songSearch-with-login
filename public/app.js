@@ -11,7 +11,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('draggable = true');
+    console.log('logic update');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -197,7 +197,7 @@ $(document).ready(function() {
         spotifyTrackName = $(elem).attr('data-track')
         spotifyArtistName = $(elem).attr('data-artist')
         $.ajax({
-            url: `https://api.spotify.com/v1/search?q=${spotifyTrackName} ${spotifyArtistName}&type=track&market=US`
+            url: `https://api.spotify.com/v1/search?q=${spotifyTrackName.replace(/\(([^\)]+)\)/, '')} ${spotifyArtistName.replace(/\(([^\)]+)\)/, '')}&type=track&market=US`
         }).done(function(data) {
             playSong(data.tracks.items)
         })
@@ -212,7 +212,12 @@ $(document).ready(function() {
         }
         var found = false
         for (var i = 0; i < tracks.length; i++) {
-            if (containsAll(tracks[i].name, spotifyTrackName.toLowerCase()) && containsAll(tracks[i].artists[0].name, spotifyArtistName.toLowerCase())) {
+            console.log('spot track name: ' + spotifyTrackName.toLowerCase());
+            console.log('last track name: ' + tracks[i].name.toLowerCase());
+            console.log('spot art name: ' + spotifyArtistName.toLowerCase());
+            console.log('last art name: ' + tracks[i].artists[0].name.toLowerCase());
+            console.log('******************');
+if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artists[0].name, spotifyArtistName)) {
                 var audio = new Audio
                 audio.src = tracks[i].preview_url
                 audio.controls = 'controls'
