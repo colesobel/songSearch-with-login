@@ -1,7 +1,6 @@
 $(document).ready(function() {
     var userName = ''
     var userPass = ''
-    var hasAccount = false
     var userTrack = ''
     var userArtist = ''
     var spotifyTrackName = ''
@@ -12,7 +11,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('total test');
+    console.log('draggable = true');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -61,6 +60,7 @@ $(document).ready(function() {
     }
 
     function checkForExistingAccount(data) {
+        var hasAccount = false
         userName = $('#login-username').val()
         userPass = $('#login-user-pass').val()
         data.forEach(function(account) {
@@ -121,6 +121,14 @@ $(document).ready(function() {
     $(document).on('click', '#submit', function() {
         isPlaylistPage = false
     })
+    $(document).on('click', '.list-group-item', createActiveTab)
+
+
+    function createActiveTab() {
+        $(this).addClass('active-result-tab')
+        $('.list-group-item').not(this).removeClass('active-result-tab')
+
+    }
 
 
     function checkUserInput(callback) {
@@ -205,7 +213,6 @@ $(document).ready(function() {
         var found = false
         for (var i = 0; i < tracks.length; i++) {
             if (containsAll(tracks[i].name, spotifyTrackName.toLowerCase()) && containsAll(tracks[i].artists[0].name, spotifyArtistName.toLowerCase())) {
-                console.log('this was found');
                 var audio = new Audio
                 audio.src = tracks[i].preview_url
                 audio.controls = 'controls'
@@ -275,6 +282,7 @@ $(document).ready(function() {
                     $(li).addClass('list-group-item')
                     $(li).attr('data-track', track)
                     $(li).attr('data-artist', account.tracks[track])
+                    $(li).attr('draggable', true)
                     $(li).html(`${track}, ${account.tracks[track]} <i class="play-button fa fa-play-circle-o" aria-hidden="true"></i> <i class="remove fa fa-times" aria-hidden="true"></i>`)
                     $('.songs').append(li)
                 }

@@ -7,7 +7,3 @@ function containsAll(spotifyTitle,lastFMTitle) {
     })
     return flag
 }
-
-console.log(containsAll('Total Eclipse of the Heart (Sunset Strippers Verse Radio Edit)', 'Total Eclipse of the Heart'));
-
-console.log(containsAll('Westlife', 'Westlife'));
