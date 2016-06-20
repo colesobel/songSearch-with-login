@@ -11,7 +11,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('logic update');
+    console.log('draggable');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -212,11 +212,6 @@ $(document).ready(function() {
         }
         var found = false
         for (var i = 0; i < tracks.length; i++) {
-            console.log('spot track name: ' + spotifyTrackName.toLowerCase());
-            console.log('last track name: ' + tracks[i].name.toLowerCase());
-            console.log('spot art name: ' + spotifyArtistName.toLowerCase());
-            console.log('last art name: ' + tracks[i].artists[0].name.toLowerCase());
-            console.log('******************');
 if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artists[0].name, spotifyArtistName)) {
                 var audio = new Audio
                 audio.src = tracks[i].preview_url
@@ -287,9 +282,9 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
                     $(li).addClass('list-group-item')
                     $(li).attr('data-track', track)
                     $(li).attr('data-artist', account.tracks[track])
-                    $(li).attr('draggable', true)
                     $(li).html(`${track}, ${account.tracks[track]} <i class="play-button fa fa-play-circle-o" aria-hidden="true"></i> <i class="remove fa fa-times" aria-hidden="true"></i>`)
                     $('.songs').append(li)
+                    $('.songs').sortable()
                 }
             }
         })
