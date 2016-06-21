@@ -11,7 +11,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('draggable');
+    console.log('no ensure nav bar');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -99,6 +99,11 @@ $(document).ready(function() {
     }
 
     function checkYoutubeAuthorization() {
+        if (!isPlaylistPage) {
+            $('#youtube-auth').hide()
+            $('#create-playlist').hide()
+            return
+        }
         if (window.location.hash.includes('access_token')) {
             $('#youtube-auth').hide()
             $('#create-playlist').show()
@@ -109,20 +114,21 @@ $(document).ready(function() {
     }
 
     //on click events
-    $('#submit').on('click', checkUserInput)
-    $('#view-playlist').on('click', getMongoLabData)
+    $('#submit').on('click', function() {
+        isPlaylistPage = false
+        checkYoutubeAuthorization()
+        checkUserInput()
+    })
     $(document).on('click', '.result-tab', showPlayerHeader)
     $(document).on('click', '.play-button', showPlayerHeader)
     $(document).on('click', '#thumbs-up', changeThumbColor)
     $(document).on('click', '.remove', getTracksToDelete )
     $(document).on('click', '#view-playlist', function() {
         isPlaylistPage = true
-    })
-    $(document).on('click', '#submit', function() {
-        isPlaylistPage = false
+        checkYoutubeAuthorization()
+        getMongoLabData()
     })
     $(document).on('click', '.list-group-item', createActiveTab)
-
 
     function createActiveTab() {
         $(this).addClass('active-result-tab')
@@ -284,10 +290,10 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
                     $(li).attr('data-artist', account.tracks[track])
                     $(li).html(`${track}, ${account.tracks[track]} <i class="play-button fa fa-play-circle-o" aria-hidden="true"></i> <i class="remove fa fa-times" aria-hidden="true"></i>`)
                     $('.songs').append(li)
-                    $('.songs').sortable()
                 }
             }
         })
+        $('.songs').sortable()
     }
 
     function getTracksToDelete() {
