@@ -11,7 +11,7 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('no ensure nav bar');
+    console.log('hopefully functional');
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -372,11 +372,20 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
     }
 
     function getYoutubeVideoIds() {
-        accessMongoLab(function(data) {
-            getMyAccount(data, function(account) {
-                populateYoutubeIds(account.tracks);
-            })
+        // accessMongoLab(function(data) {
+            // getMyAccount(data, function(account) {
+                // populateYoutubeIds(account.tracks);
+                test()
+            // })
+        // })
+    }
+
+    function test() {
+        var searchSongs = []
+        $('.songs .list-group-item').each(function(index, elem) {
+            searchSongs.unshift(`${$(elem).attr('data-track')} ${$(elem).attr('data-artist')}`);
         })
+        populateYoutubeIds(searchSongs)
     }
 
     function getMyAccount(data, callback) {
@@ -389,8 +398,8 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
 
     function populateYoutubeIds(tracks) {
         var videoIds = []
-        for (song in tracks) {
-            var searchString = `${song} ${tracks[song]}`
+        for (var i = 0; i < tracks.length; i++) {
+            var searchString = tracks[i]
             $.ajax({
                 url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
                 async: false,
