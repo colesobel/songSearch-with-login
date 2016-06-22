@@ -4,8 +4,6 @@ $(document).ready(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
     });
 
-
-
     //Global Variable Definition
     var userName = ''
     var userPass = ''
@@ -21,7 +19,7 @@ $(document).ready(function() {
     var isPlaylistPage = false
     var playlistName
     var youtubeAuthClicked = false
-    console.log('success not done');
+    console.log('pass check');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -74,10 +72,13 @@ $(document).ready(function() {
                 $('.main').show()
                 checkYoutubeAuthorization()
                 $('.my-playlist').hide()
+            } else if (account.userName === userName && account.passWord !== userPass) {
+                hasAccount = true
+                alert('Incorrect password. Please try again')
             }
         })
         if (!hasAccount) {
-            alert('no account found. Please try again or create a new account')
+            alert('No account found. Please try again or create a new account')
         }
     }
 
@@ -408,7 +409,7 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
             error: function(data) {
                 if (data.status == 401) {
                     $('.results-container').children().hide()
-                    alert('Oops, are you sure that you have a youtube account under this account? We could\'nt find one.')
+                    alert('Oops, are you sure that you have a youtube channel under this account? We could\'nt find one. (Note: authorizing youtube access for a specific email address does not guarantee that you do have an existing youtube channel.)')
                     $('#guide').slideDown(500)
                 } else {
                     alert('an unknown error occurred. Sorry! Please try again')
