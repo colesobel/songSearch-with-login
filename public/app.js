@@ -20,7 +20,7 @@ $(document).ready(function() {
     var playlistId = ''
     var isPlaylistPage = false
     var playlistName
-    console.log('flex box text align');
+    console.log('will this work?');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -117,7 +117,9 @@ $(document).ready(function() {
     }
 
     //on click events
+    $(document).on('click', '#youtube-auth', checkToUpdateDatabase)
     $('#submit').on('click', function() {
+        checkToUpdateDatabase()
         isPlaylistPage = false
         checkYoutubeAuthorization()
         checkUserInput()
@@ -132,6 +134,29 @@ $(document).ready(function() {
         getMongoLabData()
     })
     $(document).on('click', '.list-group-item', createActiveTab)
+
+    function checkToUpdateDatabase() {
+        if (isPlaylistPage) {
+            accessMongoLab(getUserPlaylist)
+        } else {
+            console.log('dont do things');
+        }
+    }
+
+    function getUserPlaylist(data) {
+        var mongoId = ''
+        data.forEach(function(account){
+            if (account.userName === userName && account.passWord === userPass) {
+                mongoId = account._id.$oid
+                var tempTracks = {}
+                $('.songs .list-group-item').each(function(index, elem) {
+                    tempTracks[$(elem).attr('data-track')] = $(elem).attr('data-artist')
+                })
+                updateDatabasePlaylist(mongoId, tempTracks)
+            }
+        })
+    }
+
 
     function createActiveTab() {
         $(this).addClass('active-result-tab')
@@ -322,6 +347,7 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
 
     function checkForAccessToken() {
         playlistName = prompt('What would you like to name your playlist?')
+        checkToUpdateDatabase()
         $('.play').hide()
         $('.my-playlist').hide()
         $('.uploading-tracks').html('Please wait while your tracks are being uploaded. This may take a few moments...').slideDown(500)
