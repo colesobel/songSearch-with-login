@@ -288,3 +288,16 @@ audio {
 .uploading-tracks {
     display: none;
 }
+
+.main {
+    display: none;
+}
+
+.play {
+    display: flex;
+    justify-content: center
+}
+
+.player-header p {
+    text-align: center;
+}

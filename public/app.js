@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    $('.main').hide()
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -21,7 +20,7 @@ $(document).ready(function() {
     var playlistId = ''
     var isPlaylistPage = false
     var playlistName
-    console.log('playlist name global');
+    console.log('flex box text align');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -214,6 +213,7 @@ $(document).ready(function() {
     }
 
     function playSong(tracks) {
+        $('.play').show()
         $('.player').empty()
         $('.player-header').empty()
         $('.player-header').append(`<p data-track="${spotifyTrackName}" data-artist="${spotifyArtistName}"> ${spotifyTrackName}, ${spotifyArtistName} &nbsp <i id="thumbs-up" class="fa fa-thumbs-o-up" aria-hidden="true"></i></p>`)
@@ -281,6 +281,7 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         $('.player').hide(500)
         $('.error').hide(500)
         $('.no-input').hide(500)
+        $('.uploading-tracks').hide(500)
         $('.songs').empty()
         $('.my-playlist').show(500)
         $('.songs').show(500)
@@ -323,8 +324,7 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         playlistName = prompt('What would you like to name your playlist?')
         $('.play').hide()
         $('.my-playlist').hide()
-        $('.uploading-tracks').html('Please wait while your tracks are being uploaded. This may take a few moments...')
-        $('.uploading-tracks').show()
+        $('.uploading-tracks').html('Please wait while your tracks are being uploaded. This may take a few moments...').slideDown(500)
         if (window.location.hash.includes('access_token')) {
             getAccessToken()
         } else {
@@ -375,11 +375,6 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         $('.songs .list-group-item').each(function(index, elem) {
             searchSongs.unshift(`${$(elem).attr('data-track')} ${$(elem).attr('data-artist')}`);
         })
-        hideElements(searchSongs)
-    }
-
-
-    function hideElements(searchSongs) {
         populateYoutubeIds(searchSongs)
     }
 
@@ -436,6 +431,7 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
     function addListenButton() {
         $('#create-playlist').hide()
         $('#youtube-auth').hide()
+        $('.listen').remove()
         var listen = document.createElement('a')
         $(listen).attr('href', `https://www.youtube.com/playlist?list=${playlistId}`)
         $(listen).attr('target', 'blank')
