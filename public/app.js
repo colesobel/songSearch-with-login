@@ -21,7 +21,7 @@ $(document).ready(function() {
     var isPlaylistPage = false
     var playlistName
     var youtubeAuthClicked = false
-    console.log('please work');
+    console.log('success not done');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -294,7 +294,6 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
     }
 
     function updateDatabasePlaylist(mongoId, currentSelections, callback) {
-        console.log('should log third');
         $.ajax({
             type: 'PUT',
             url: `https://api.mlab.com/api/1/databases/songsearch/collections/playlist/${mongoId}?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb`,
@@ -304,7 +303,6 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
             if (callback) {
                 callback()
             } else {
-                console.log('there is no callback');
             }
         })
     }
@@ -393,7 +391,6 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
     }
 
     function nameANewPlaylist() {
-        console.log('hello');
         createPlaylistPostRequest(playlistName, 'My new playlist!')
     }
 
@@ -407,10 +404,20 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
                     "title": `${playlistName}`,
                     "description": `${description}`
                 }
-            })
-        }).done(function(data) {
-            playlistId = data.id
-            createYoutubeSearchStrings()
+            }),
+            error: function(data) {
+                if (data.status == 401) {
+                    $('.results-container').children().hide()
+                    alert('Oops, are you sure that you have a youtube account under this account? We could\'nt find one.')
+                    $('#guide').slideDown(500)
+                } else {
+                    alert('an unknown error occurred. Sorry! Please try again')
+                }
+            },
+            success: function(data) {
+                playlistId = data.id
+                createYoutubeSearchStrings()
+            }
         })
     }
 
