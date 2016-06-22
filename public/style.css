@@ -284,3 +284,7 @@ audio {
 .play-button:hover {
     color: #1ec320;
 }
+
+.uploading-tracks {
+    display: none;
+}

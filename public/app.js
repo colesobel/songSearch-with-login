@@ -1,4 +1,13 @@
 $(document).ready(function() {
+    $('.main').hide()
+
+    $('.message a').click(function() {
+        $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+    });
+
+
+
+    //Global Variable Definition
     var userName = ''
     var userPass = ''
     var userTrack = ''
@@ -11,13 +20,8 @@ $(document).ready(function() {
     var accessToken = ''
     var playlistId = ''
     var isPlaylistPage = false
-    console.log('hopefully functional');
-
-    $('.message a').click(function() {
-        $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-    });
-
-    $('.main').hide()
+    var playlistName
+    console.log('playlist name global');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -316,6 +320,11 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
     $(document).on('click', '#create-playlist', checkForAccessToken)
 
     function checkForAccessToken() {
+        playlistName = prompt('What would you like to name your playlist?')
+        $('.play').hide()
+        $('.my-playlist').hide()
+        $('.uploading-tracks').html('Please wait while your tracks are being uploaded. This may take a few moments...')
+        $('.uploading-tracks').show()
         if (window.location.hash.includes('access_token')) {
             getAccessToken()
         } else {
@@ -335,15 +344,12 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         $.ajax({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
         }).done(function(data) {
-            console.log(data);
             nameANewPlaylist()
         })
     }
 
     function nameANewPlaylist() {
-        var playlistName = prompt('What would you like to name your playlist?')
-        $('.results-container').children().hide()
-        $('.uploading-tracks').html('Please wait while your tracks are being uploaded. This may take a few moments...').slideDown(500)
+        console.log('hello');
         createPlaylistPostRequest(playlistName, 'My new playlist!')
     }
 
@@ -351,7 +357,6 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         $.ajax({
             type: 'POST',
             url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
-            async: false,
             contentType: 'application/json',
             data: JSON.stringify({
                 "snippet": {
@@ -360,40 +365,22 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
                 }
             })
         }).done(function(data) {
-            retrieveNewPlaylistId(data)
-            console.log(data);
+            playlistId = data.id
+            createYoutubeSearchStrings()
         })
     }
 
-
-    function retrieveNewPlaylistId(data) {
-        playlistId = data.id
-        getYoutubeVideoIds()
-    }
-
-    function getYoutubeVideoIds() {
-        // accessMongoLab(function(data) {
-            // getMyAccount(data, function(account) {
-                // populateYoutubeIds(account.tracks);
-                test()
-            // })
-        // })
-    }
-
-    function test() {
+    function createYoutubeSearchStrings() {
         var searchSongs = []
         $('.songs .list-group-item').each(function(index, elem) {
             searchSongs.unshift(`${$(elem).attr('data-track')} ${$(elem).attr('data-artist')}`);
         })
-        populateYoutubeIds(searchSongs)
+        hideElements(searchSongs)
     }
 
-    function getMyAccount(data, callback) {
-        data.forEach(function(account) {
-            if (account.userName === userName && account.passWord === userPass) {
-                callback(account)
-            }
-        })
+
+    function hideElements(searchSongs) {
+        populateYoutubeIds(searchSongs)
     }
 
     function populateYoutubeIds(tracks) {
@@ -412,6 +399,15 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
     }
 
     function UploadToYoutube(accessToken, videoIds) {
+        // var seriesArray = videoIds.map(function(id) {
+        //     return function() {
+        //         $.ajax({
+        //
+        //         })
+        //     }
+        // })
+        //
+        // console.log(seriesArray);
         for (var i = 0; i < videoIds.length; i++) {
             console.log('uploading ' + videoIds[i] + ' to youtube with access token ' + accessToken);
             $.ajax({
