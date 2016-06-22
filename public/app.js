@@ -20,7 +20,8 @@ $(document).ready(function() {
     var playlistId = ''
     var isPlaylistPage = false
     var playlistName
-    console.log('will this work?');
+    var youtubeAuthClicked = false
+    console.log('please work');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -117,7 +118,7 @@ $(document).ready(function() {
     }
 
     //on click events
-    $(document).on('click', '#youtube-auth', checkToUpdateDatabase)
+    $(document).on('click', '#youtube-auth', redirectToYoutubeAuth)
     $('#submit').on('click', function() {
         checkToUpdateDatabase()
         isPlaylistPage = false
@@ -135,11 +136,15 @@ $(document).ready(function() {
     })
     $(document).on('click', '.list-group-item', createActiveTab)
 
+    function redirectToYoutubeAuth() {
+        youtubeAuthClicked = true
+        checkToUpdateDatabase()
+
+    }
+
     function checkToUpdateDatabase() {
         if (isPlaylistPage) {
             accessMongoLab(getUserPlaylist)
-        } else {
-            console.log('dont do things');
         }
     }
 
@@ -152,7 +157,13 @@ $(document).ready(function() {
                 $('.songs .list-group-item').each(function(index, elem) {
                     tempTracks[$(elem).attr('data-track')] = $(elem).attr('data-artist')
                 })
-                updateDatabasePlaylist(mongoId, tempTracks)
+                if (youtubeAuthClicked) {
+                    updateDatabasePlaylist(mongoId, tempTracks, function() {
+                        window.location = 'https://accounts.google.com/o/oauth2/auth?client_id=719644486942-miua9p0o58of75b40r06hcgfbkpb2njm.apps.googleusercontent.com&redirect_uri=https://project-3022223182424588945.firebaseapp.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.force-ssl+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutubepartner+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.upload&approval_prompt=force&response_type=token'
+                    })
+                } else {
+                    updateDatabasePlaylist(mongoId, tempTracks)
+                }
             }
         })
     }
@@ -282,12 +293,19 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         updateDatabasePlaylist(mongoId, currentSelections)
     }
 
-    function updateDatabasePlaylist(mongoId, currentSelections) {
+    function updateDatabasePlaylist(mongoId, currentSelections, callback) {
+        console.log('should log third');
         $.ajax({
             type: 'PUT',
             url: `https://api.mlab.com/api/1/databases/songsearch/collections/playlist/${mongoId}?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb`,
             contentType: "application/json",
             data: JSON.stringify( { "$set" : { 'tracks' : currentSelections } } )
+        }).done(function() {
+            if (callback) {
+                callback()
+            } else {
+                console.log('there is no callback');
+            }
         })
     }
 
