@@ -1,5 +1,65 @@
 $(document).ready(function() {
 
+    var colors = new Array(
+    [62,35,255],
+    [60,255,60],
+    [255,35,98],
+    [45,175,230],
+    [255,0,255],
+    [255,128,0]);
+
+    var step = 0;
+    //color table indices for:
+    // current color left
+    // next color left
+    // current color right
+    // next color right
+    var colorIndices = [0,1,2,3];
+
+    //transition speed
+    var gradientSpeed = 0.002;
+
+    function updateGradient() {
+
+        if ( $===undefined ) return;
+
+        var c0_0 = colors[colorIndices[0]];
+        var c0_1 = colors[colorIndices[1]];
+        var c1_0 = colors[colorIndices[2]];
+        var c1_1 = colors[colorIndices[3]];
+
+        var istep = 1 - step;
+        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+        var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+        var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+        $('body').css({
+        background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+        background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+
+        step += gradientSpeed;
+        if ( step >= 1 ){
+        step %= 1;
+        colorIndices[0] = colorIndices[1];
+        colorIndices[2] = colorIndices[3];
+
+        //pick two new target color indices
+        //do not pick the same as the current one
+        colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+        colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+
+        }
+    }
+
+    setInterval(updateGradient,1);
+
+
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
     });
@@ -19,7 +79,7 @@ $(document).ready(function() {
     var isPlaylistPage = false
     var playlistName
     var youtubeAuthClicked = false
-    console.log('pass check');
+    console.log('play event alert raw js');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -136,6 +196,7 @@ $(document).ready(function() {
         getMongoLabData()
     })
     $(document).on('click', '.list-group-item', createActiveTab)
+
 
     function redirectToYoutubeAuth() {
         youtubeAuthClicked = true
@@ -259,20 +320,25 @@ $(document).ready(function() {
         }
         var found = false
         for (var i = 0; i < tracks.length; i++) {
-if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artists[0].name, spotifyArtistName)) {
+            if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artists[0].name, spotifyArtistName)) {
                 var audio = new Audio
                 audio.src = tracks[i].preview_url
                 audio.controls = 'controls'
                 audio.autoplay = 'autoplay'
                 $('.player').append(audio)
-                    found = true
-                    return
+                // audio.addEventListener('play', alterBackgroundColor)
+                found = true
+                return
             }
         }
         if (found === false) {
             $('.player').append('<p>Sorry, no song preview available for this track</p>')
         }
     }
+
+    // function alterBackgroundColor() {
+    //     $('#submit').animate({background: 'radial-gradient(#818a8d, grey, #1ebeb9)'}, 2000)
+    // }
 
     function changeThumbColor() {
         $(this).addClass('thumbs-up-clicked', 'slow')
@@ -449,12 +515,27 @@ if (containsAll(tracks[i].name, spotifyTrackName) && containsAll(tracks[i].artis
         // var seriesArray = videoIds.map(function(id) {
         //     return function() {
         //         $.ajax({
-        //
+        //             type: 'POST',
+        //             url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+        //             contentType: 'application/json',
+        //             data: JSON.stringify({
+        //                 "snippet": {
+        //                     "playlistId": playlistId,
+        //                     "resourceId": {
+        //                         "kind": "youtube#video",
+        //                         "videoId": id
+        //                     },
+        //                     "position": 0
+        //                 }
+        //             }),
+        //             error: function(data) {
+        //                 console.log(data);
+        //             }
         //         })
         //     }
         // })
-        //
         // console.log(seriesArray);
+        // async.series(seriesArray)
         for (var i = 0; i < videoIds.length; i++) {
             console.log('uploading ' + videoIds[i] + ' to youtube with access token ' + accessToken);
             $.ajax({
