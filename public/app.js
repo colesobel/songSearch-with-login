@@ -78,7 +78,8 @@ $(document).ready(function() {
     var isPlaylistPage = false
     var playlistName
     var youtubeAuthClicked = false
-    console.log('better async');
+    var videoIds = []
+    console.log('video ids');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -497,23 +498,47 @@ $(document).ready(function() {
     }
 
     function populateYoutubeIds(tracks) {
-        var videoIds = []
-        for (var i = 0; i < tracks.length; i++) {
-            var searchString = tracks[i]
-            $.ajax({
-                url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
-                async: false,
-                success: function(data) {
-                    videoIds.push(data.items[0].id.videoId)
-                }
-            })
-        }
-        UploadToYoutube(accessToken, videoIds)
+        videoIds = []
+        var getVideoIdsArray = tracks.map(function(track) {
+            return function(callback) {
+                $.ajax({
+                    url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${track}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
+                    success: function(data) {
+                        videoIds.push(data.items[0].id.videoId)
+                        callback(null, track)
+                    },
+                    error: function(data) {
+                        callback(data)
+                    }
+                })
+            }
+        })
+
+        async.series(getVideoIdsArray, function(err, results) {
+            if (err) {
+                console.log(err);
+            }
+            if (results) {
+                UploadToYoutube(accessToken, videoIds)
+                console.log(results);
+            }
+        })
+        // for (var i = 0; i < tracks.length; i++) {
+        //     var searchString = tracks[i]
+        //     $.ajax({
+        //         url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
+        //         success: function(data) {
+        //             videoIds.push(data.items[0].id.videoId)
+        //         }
+        //     })
+        // }
     }
 
     function UploadToYoutube(accessToken, videoIds) {
+        console.log('video ids: ', videoIds);
         var seriesArray = videoIds.map(function(videoId) {
             return function(callback) {
+                console.log('uploading: ', videoId);
                 $.ajax({
                     type: 'POST',
                     url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,

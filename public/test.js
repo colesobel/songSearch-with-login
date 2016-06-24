@@ -1,13 +1,9 @@
-$(document).ready(function() {
 
 
-    $('#button').click(function() {
-        $('h1').css('color', 'blue')
-    })
+var array = [1,2,3,4,5]
 
-    $('#button').trigger('click')
+console.log(array);
 
+array.length = 0
 
-
-
-})
+console.log(array);
