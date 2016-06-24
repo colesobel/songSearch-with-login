@@ -81,7 +81,7 @@ $(document).ready(function() {
     var playlistName
     var youtubeAuthClicked = false
     // var intervalId
-    console.log('play event alert raw js');
+    console.log('pause play');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -332,7 +332,7 @@ $(document).ready(function() {
                 audio.autoplay = 'autoplay'
                 $(audio).addClass('audio')
                 $('.player').append(audio)
-                $(audio).on('play', intervalId = setInterval(updateGradient,10))
+                $(audio).on('play', function() {intervalId = setInterval(updateGradient,5)})
                 $(audio).on('pause', function() {clearInterval(intervalId)})
                 $(audio).on('ended', function() {clearInterval(intervalId)})
                 console.log(intervalId);
