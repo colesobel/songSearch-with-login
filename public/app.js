@@ -58,8 +58,6 @@ $(document).ready(function() {
         }
     }
 
-    // setInterval(updateGradient,15);
-
 
     $('.message a').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
@@ -80,8 +78,7 @@ $(document).ready(function() {
     var isPlaylistPage = false
     var playlistName
     var youtubeAuthClicked = false
-    // var intervalId
-    console.log('pause play');
+    console.log('better async');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -198,8 +195,6 @@ $(document).ready(function() {
         getMongoLabData()
     })
     $(document).on('click', '.list-group-item', createActiveTab)
-    // $(document).on('play', '.audio', intervalId = setInterval(updateGradient,1))
-    // $(document).on('pause', '.audio', clearInterval(intervalId))
 
 
     function redirectToYoutubeAuth() {
@@ -332,10 +327,9 @@ $(document).ready(function() {
                 audio.autoplay = 'autoplay'
                 $(audio).addClass('audio')
                 $('.player').append(audio)
-                $(audio).on('play', function() {intervalId = setInterval(updateGradient,5)})
+                $(audio).on('play', function() {intervalId = setInterval(updateGradient,3)})
                 $(audio).on('pause', function() {clearInterval(intervalId)})
                 $(audio).on('ended', function() {clearInterval(intervalId)})
-                console.log(intervalId);
                 found = true
                 return
             }
@@ -518,52 +512,40 @@ $(document).ready(function() {
     }
 
     function UploadToYoutube(accessToken, videoIds) {
-        // var seriesArray = videoIds.map(function(id) {
-        //     return function() {
-        //         $.ajax({
-        //             type: 'POST',
-        //             url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
-        //             contentType: 'application/json',
-        //             data: JSON.stringify({
-        //                 "snippet": {
-        //                     "playlistId": playlistId,
-        //                     "resourceId": {
-        //                         "kind": "youtube#video",
-        //                         "videoId": id
-        //                     },
-        //                     "position": 0
-        //                 }
-        //             }),
-        //             error: function(data) {
-        //                 console.log(data);
-        //             }
-        //         })
-        //     }
-        // })
-        // console.log(seriesArray);
-        // async.series(seriesArray)
-        for (var i = 0; i < videoIds.length; i++) {
-            console.log('uploading ' + videoIds[i] + ' to youtube with access token ' + accessToken);
-            $.ajax({
-                type: 'POST',
-                async: false,
-                url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    "snippet": {
-                        "playlistId": playlistId,
-                        "resourceId": {
-                            "kind": "youtube#video",
-                            "videoId": videoIds[i]
-                        },
-                        "position": 0
+        var seriesArray = videoIds.map(function(videoId) {
+            return function(callback) {
+                $.ajax({
+                    type: 'POST',
+                    url: `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw&access_token=${accessToken}`,
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "snippet": {
+                            "playlistId": playlistId,
+                            "resourceId": {
+                                "kind": "youtube#video",
+                                "videoId": videoId
+                            },
+                            "position": 0
+                        }
+                    }),
+                    success: function() {
+                        callback(null, playlistId)
+                    },
+                    error: function(data) {
+                        callback(data)
                     }
-                }),
-                error: function(data) {
-                    console.log(data);
-                }
-            })
-        }
+                })
+            }
+        })
+
+        async.series(seriesArray, function(err, results) {
+            if (err) {
+                console.log(err);
+            }
+            if (results) {
+                console.log(results);
+            }
+        })
         addListenButton()
     }
 
