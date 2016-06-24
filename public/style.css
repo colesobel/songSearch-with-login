@@ -7,7 +7,8 @@
 }
 
 body {
-    background: radial-gradient(#818a8d, grey, #1ebeb9);
+    /*background: radial-gradient(#818a8d, grey, #1ebeb9);*/
+    background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgb(62, 35, 255)), to(rgb(255, 35, 98)));
     margin: 0;
     font-family: Optima, sans-serif;
 }

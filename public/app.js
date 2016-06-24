@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+    //Color Gradient Things
     var colors = new Array(
     [62,35,255],
     [60,255,60],
@@ -57,7 +58,7 @@ $(document).ready(function() {
         }
     }
 
-    setInterval(updateGradient,1);
+    // setInterval(updateGradient,15);
 
 
     $('.message a').click(function() {
@@ -79,6 +80,7 @@ $(document).ready(function() {
     var isPlaylistPage = false
     var playlistName
     var youtubeAuthClicked = false
+    // var intervalId
     console.log('play event alert raw js');
 
     $('#login').click(function() {
@@ -196,6 +198,8 @@ $(document).ready(function() {
         getMongoLabData()
     })
     $(document).on('click', '.list-group-item', createActiveTab)
+    // $(document).on('play', '.audio', intervalId = setInterval(updateGradient,1))
+    // $(document).on('pause', '.audio', clearInterval(intervalId))
 
 
     function redirectToYoutubeAuth() {
@@ -311,6 +315,7 @@ $(document).ready(function() {
     }
 
     function playSong(tracks) {
+        $('.audio').trigger('pause')
         $('.play').show()
         $('.player').empty()
         $('.player-header').empty()
@@ -325,8 +330,12 @@ $(document).ready(function() {
                 audio.src = tracks[i].preview_url
                 audio.controls = 'controls'
                 audio.autoplay = 'autoplay'
+                $(audio).addClass('audio')
                 $('.player').append(audio)
-                // audio.addEventListener('play', alterBackgroundColor)
+                $(audio).on('play', intervalId = setInterval(updateGradient,10))
+                $(audio).on('pause', function() {clearInterval(intervalId)})
+                $(audio).on('ended', function() {clearInterval(intervalId)})
+                console.log(intervalId);
                 found = true
                 return
             }
@@ -336,9 +345,6 @@ $(document).ready(function() {
         }
     }
 
-    // function alterBackgroundColor() {
-    //     $('#submit').animate({background: 'radial-gradient(#818a8d, grey, #1ebeb9)'}, 2000)
-    // }
 
     function changeThumbColor() {
         $(this).addClass('thumbs-up-clicked', 'slow')
