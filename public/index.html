@@ -22,14 +22,19 @@
                         <input type="text" placeholder="username" name="username"autofocus="" id="create-username"/>
                         <input type="password" placeholder="password" id="create-user-pass"/>
                         <input type="submit" value="Create" class="button" id="createUser"/>
-                        <p class="message">Already registered? <a href="#">Sign In</a></p>
+                        <p class="message">Already registered? <span class="a">Sign In</span></p>
                     </form>
                     <form class="login-form" action="index.html" method="GET">
                         <input type="text" placeholder="username" name="username" autofocus="" id="login-username"/>
                         <input type="password" placeholder="password" id="login-user-pass"/>
                         <input type="submit" value="Login" class="button" id="login"/>
-                        <p class="message">Not registered? <a href="#">Create an account</a></p>
+                        <p class="message">Not registered? <span class="a">Create an account</span></p>
                 </form>
+                </div>
+                <div class="login-page-bio-div">
+                    <p class="login-page-bio">
+                        Find new music and generate playlists based on songs you already know you love
+                    </p>
                 </div>
             </div>
             <main class="main">
@@ -43,6 +48,11 @@
                     <input type="submit" id="create-playlist" class="btn btn-default"  value="Upload to Youtube">
 
                 </nav>
+                <div class="youtube-instructions">
+                    <p>
+                        Export your playlist to youtube to listen to it in its entirety. You must have an existing youtube account for this feature.
+                    </p>
+                </div>
 
                 <div class="results-container">
 
@@ -65,7 +75,7 @@
                     <!-- </div> -->
 
                     <p id="guide">
-                        Find new music by entering a track and its artist to anchor your search
+                        Enter a song and its artist to anchor your search
                     </p>
 
 

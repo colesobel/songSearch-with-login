@@ -59,7 +59,7 @@ $(document).ready(function() {
     }
 
 
-    $('.message a').click(function() {
+    $('.message').click(function() {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
     });
 
@@ -79,7 +79,6 @@ $(document).ready(function() {
     var playlistName
     var youtubeAuthClicked = false
     var videoIds = []
-    console.log('video ids');
 
     $('#login').click(function() {
         event.preventDefault()
@@ -196,6 +195,10 @@ $(document).ready(function() {
         getMongoLabData()
     })
     $(document).on('click', '.list-group-item', createActiveTab)
+
+    $('#youtube-auth').hover(function() {
+        $('.youtube-instructions').toggleClass('youtube-instructions-active')
+    })
 
 
     function redirectToYoutubeAuth() {
@@ -366,7 +369,10 @@ $(document).ready(function() {
             type: 'PUT',
             url: `https://api.mlab.com/api/1/databases/songsearch/collections/playlist/${mongoId}?apiKey=VhcajL6c-z_UWZkfhOGUxYR0bYEl8yEb`,
             contentType: "application/json",
-            data: JSON.stringify( { "$set" : { 'tracks' : currentSelections } } )
+            data: JSON.stringify( { "$set" : { 'tracks' : currentSelections } } ),
+            error: function() {
+                alert('The database respnded with an internal error when trying to save the track to your playlist. Please refresh the page and try again.')
+            }
         }).done(function() {
             if (callback) {
                 callback()
@@ -523,15 +529,6 @@ $(document).ready(function() {
                 console.log(results);
             }
         })
-        // for (var i = 0; i < tracks.length; i++) {
-        //     var searchString = tracks[i]
-        //     $.ajax({
-        //         url: `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchString}&type=video&key=AIzaSyAsA8OyLKjlemMUgQYPM5HWxt8pr88JHzw`,
-        //         success: function(data) {
-        //             videoIds.push(data.items[0].id.videoId)
-        //         }
-        //     })
-        // }
     }
 
     function UploadToYoutube(accessToken, videoIds) {
@@ -557,6 +554,7 @@ $(document).ready(function() {
                         callback(null, playlistId)
                     },
                     error: function(data) {
+                        console.log(data);
                         callback(data)
                     }
                 })
@@ -566,12 +564,12 @@ $(document).ready(function() {
         async.series(seriesArray, function(err, results) {
             if (err) {
                 console.log(err);
+                alert('uh oh, there seems to be an error. Please try again')
             }
             if (results) {
-                console.log(results);
+                addListenButton()
             }
         })
-        addListenButton()
     }
 
     function addListenButton() {

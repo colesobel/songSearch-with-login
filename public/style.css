@@ -16,16 +16,23 @@ body {
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
 .login-page {
-  width: 360px;
-  padding: 8% 0 0;
-  margin: auto;
+    min-width: 475px;
+    padding: 8% 0 0;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    min-width: 400px;
 }
 .form {
   position: relative;
   z-index: 1;
   background: #FFFFFF;
   max-width: 360px;
-  margin: 0 auto 100px;
+  margin: 0 auto;
+  margin-top: 100px;
   padding: 45px;
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
@@ -63,9 +70,10 @@ body {
   color: #b3b3b3;
   font-size: 12px;
 }
-.form .message a {
+.form .message .a {
   color: #4CAF50;
   text-decoration: none;
+  cursor: pointer;
 }
 .form .register-form {
   display: none;
@@ -96,7 +104,7 @@ body {
   color: #4d4d4d;
   font-size: 12px;
 }
-.container .info span a {
+.container .info span .a {
   color: #000000;
   text-decoration: none;
 }
@@ -150,6 +158,27 @@ body {
     height: 30px;
 }
 
+.youtube-instructions {
+    display: none;
+    flex-wrap: wrap;
+    width: 200px;
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+}
+
+.youtube-instructions-active {
+    display: flex;
+    position: absolute;
+    right: 5px;
+    top: 50px;
+}
+
+@media (min-width: 850px) {
+    #song, #artist {
+        width: 200px;
+    }
+}
 
 .results-container {
     display: flex;
@@ -260,6 +289,33 @@ audio {
     font-size: 2em;
 }
 
+.login-page-bio-div {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+@media (max-width: 1130px) {
+    .login-page-bio-div {
+        font-size: 1.7em;
+    }
+}
+
+@media (max-width: 975px) {
+    .login-page-bio-div {
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 800px) {
+    .login-page-bio-div {
+        flex-wrap: wrap;
+        align-content: center;
+        text-align: center;
+    }
+}
+
 .playlist-result-container {
 
 }
@@ -267,6 +323,9 @@ audio {
 .playlist-result {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding-right: 70px;
 }
 
 .error, .no-input, .uploading-tracks {
